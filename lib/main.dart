@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
 
 class HomeWidgetState extends State<HomeWidget> {
   double _teamsCounter = 5;
+  bool _showBye = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,16 +84,32 @@ class HomeWidgetState extends State<HomeWidget> {
       }
     }
 
+    List<String> row1 = new List<String>();
+    List<String> row2 = new List<String>();
+
+    for (var i = 0; i < _teams.length ~/ 2; i++) {
+      row1.add(_teams[i]);
+      row2.add(_teams[_teamCount - i]);
+    }
+
     for (var j = 0; j < _teams.length - 1; j++) {
       for (var i = 0; i < _teams.length ~/ 2; i++) {
-        if (_teams[i] != 'bye' && _teams[_teams.length ~/ 2 + i] != 'bye') {
+        if (_showBye) {
           _widgetsList.add(ListTile(
-            title: Text(_teams[i] + ' vs ' + _teams[_teams.length ~/ 2 + i]),
+            title: Text(row1[i] + ' vs ' + row2[i]),
+          ));
+        } else if (!_showBye && row1[i] != 'bye' && row2[i] != 'bye') {
+          _widgetsList.add(ListTile(
+            title: Text(row1[i] + ' vs ' + row2[i]),
           ));
         }
       }
-      _teams.insert(1, _teams.last);
-      _teams.removeLast();
+      row1.insert(1, row2.first);
+      row2.add(row1.last);
+      row1.removeLast();
+      row2.removeAt(0);
+      // _teams.insert(1, _teams.last);
+      // _teams.removeLast();
     }
 
     return _widgetsList;
@@ -134,6 +151,13 @@ class HomeWidgetState extends State<HomeWidget> {
               style: Theme.of(context).textTheme.display1,
             ),
             _getSlider(),
+            Checkbox(
+                value: _showBye,
+                onChanged: (bool value) {
+                  setState(() {
+                    _showBye = value;
+                  });
+                })
           ],
         ),
       ),
